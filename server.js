@@ -1,39 +1,41 @@
-/* const user = require('./user/user')
-
-console.log(`${user.personInfo.name} is ${user.personInfo.age} years of age` );
-user.greetThem();
-console.log(__dirname)
-console.log(__filename)
- */
-
 const http = require("http");
+const fs = require('fs');
+const path = require('path');
 
 const server = http.createServer((req, res) => {
-  if (req.method === "GET") {
+  if(req.method === 'GET') {
     res.writeHead(200, {
-      "Content-Type": "text/html; charset=utf-8",
-    });
-    res.end(`<form action="/" method="post" >
-          <input type="text"/>
-          <button type="submit">Submit</button>
-          </form>`);
-  } else if (req.method === "POST") {
-    const body = [];
+      'Content-Type': 'text/html; utf-8'
+    })
+    
+    if(req.url === '/') {
+      fs.readFile(path.join(__dirname, 'views', 'index.html'), 'utf8', function(err, content) {
+        if(err) throw err;
+        res.end(content)
+      })
+    } else if (req.url === '/about') {
+      fs.readFile(path.join(__dirname, 'views', 'about.html'), 'utf8', function(err, content) {
+        if(err) throw err;
+        res.end(content)
+      })
+    }
 
+  } else if (req.method = 'POST') {
+    const body = [];
     res.writeHead(200, {
-      'Content-Type': 'text/html; charset=utf-8'
+      'Content-Type': 'text/html; utf-8'
     })
 
-    req.on("data", (data) => {
+    req.on('data', (data) => {
       body.push(Buffer.from(data));
-    });
+    }) 
 
-    req.on("end", () => {
-      const messege = body.toString().split('=')[1]
+    req.on('end', () => {
       res.end(`
-        <h1>sup${messege}</h1>`);
-    });
+      <div>${body}</div>
+      `)
+    })
   }
-});
+})
 
 server.listen(3000);
